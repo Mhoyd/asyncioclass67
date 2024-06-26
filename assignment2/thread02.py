@@ -4,12 +4,12 @@ from time import time, sleep, ctime
 import threading
 
 def cooking(index):
-    print(f'{ctime()} Kitchen-(index)   : Begin cooking... PTD {os.getpid()}')
+    print(f'{ctime()} Kitchen-{index}   : Begin cooking... PTD {os.getpid()}')
     cooking_time = time()
-    print(f'{ctime()} Kitchen-(index)   : Begin cooking...')
+    print(f'{ctime()} Kitchen-{index}   : Begin cooking...')
     sleep(2)
     duration = time() -cooking_time
-    print(f'{ctime()} Kitchen-(index)   : Cooking done in {duration:0.2f} seconds!')
+    print(f'{ctime()} Kitchen-{index}   : Cooking done in {duration:0.2f} seconds!')
     
 if __name__ == "__main__":
     # Begin of main thread
@@ -27,5 +27,5 @@ if __name__ == "__main__":
     for index, c in enumerate(chefs):
         c.join()
     
-    duration = time() -start_time()
+    duration = time() -start_time
     print(f'{ctime()} Main      : Finished cooking duration in {duration:0.2f}')
