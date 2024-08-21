@@ -9,8 +9,6 @@ async def get_pokemon(client, url):
     resp = await client.get(url)
     pokemon = resp.json(url)
 
-    return Pokemon(pokemon)
-
 async def get_pokemons():
     async with httpx.AsyncClient() as client:
         tasks = []
