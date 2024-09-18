@@ -9,8 +9,8 @@ from random import randrange
 # which represents the time required for checking out the product.
 class Product:
     def __init__(self, product_name: str, checkout_time: float):
-       self.product_name = product_name
-       self.checkout_time = checkout_time     
+        self.product_name = product_name
+        self.checkout_time = checkout_time
 
 class Customer:
     def __init__(self, customer_id: int, products: list[Product]):
@@ -32,18 +32,18 @@ async def checkout_customer(queue: Queue, cashier_number: int):
     while not queue.empty():
         customer: Customer = await queue.get()
         customer_start_time = time.perf_counter()
-        print(f"The Cashier_{cashier_number}"
-            f"will checkout Customer_{customer.customer_id}")
+        print(f"The Cashier_{cashier_number} "
+              f"will checkout Customer_{customer.customer_id}")
         for product in customer.products:
-            print(f"The Cashier_{cashier_number}"
-                  f"will checkout Customer_{customer.customer_id}'s"
-                  f"Product_{product.product_name}"
+            print(f"The Cashier_{cashier_number} "
+                  f"will checkout Customer_{customer.customer_id}'s "
+                  f"Product+{product.product_name} "
                   f"in {product.checkout_time} secs")
             await asyncio.sleep(product.checkout_time)
-        print(f"The Cashier_{cashier_number}"
-              f"finished checkout Customer_{customer.customer_id}"
-              f"in {round(time.perf_counter()-customer_start_time, ndigits=2)} secs")
-
+        print(f"The Cashier_{cashier_number} "
+              f"finished checkout Customer_{customer.customer_id} "
+              f"in {round(time.perf_counter() - customer_start_time ,ndigits=2)} secs")
+        
         queue.task_done()
 
 # we implement the generate_customer method as a factory method for producing customers.
@@ -63,38 +63,27 @@ def generate_customer(customer_id: int) -> Customer:
 async def customer_generation(queue: Queue, customers: int):
     customer_count = 0
     while True:
-        customers = [generate_customer(the_id)
-                     for the_id in range(customer_count, customer_count+customers)]
+        customers = [generate_customer(the_id) for the_id in range(customer_count, customer_count+customers)]
         for customer in customers:
-            print("Waiting to put customer in line...")
+            print("Waiting to put customer in line....")
             await queue.put(customer)
             print("Customer put in line...")
-        customer_count = customer_count+len(customers)
+        customer_count = customer_count + len(customers)
         await asyncio.sleep(.001)
         return customer_count
 
 # Finally, we use the main method to initialize the queue, 
 # producer, and consumer, and start all concurrent tasks.
 async def main():
-    customer_queue = Queue(5) #Queue
-    customers_start_time = time.perf_counter()
-    customer_producer = asyncio.create_task(customer_generation(customer_queue, 20)) #Customer
-    cashiers =[checkout_customer(customer_queue, i) for i in range(5)] #Cashier
+    customer_queue = Queue(5)
+    customer_start_time = time.perf_counter()
+    customer_producer = asyncio.create_task(customer_generation(customer_queue, 20))
+    cashiers = [checkout_customer(customer_queue, i) for i in range(5)]
 
     await asyncio.gather(customer_producer, *cashiers)
-    print(f"The supermarket process finished"
-          f"{customer_producer.result()} customers"
-            f"in {round(time.perf_counter() - customers_start_time, ndigits=2)} secs")
-    
-        
-    
-    
-
-
-
-
-
-
+    print(f"The supermarket process finished "
+          f"{customer_producer.result()} customers "
+            f"in {round(time.perf_counter() - customer_start_time ,ndigits=2)} secs")
     
 if __name__ == "__main__":
     asyncio.run(main())
@@ -102,10 +91,10 @@ if __name__ == "__main__":
 
 # +--------|------------|-------------|-----------------------|-------------------------    
 # Queue	   | Customer   | Cashier	  |  Time each Customer	  |  Time for all Customers
-# 2	       | 2	        | 2		      |         2.02    s     |     2.02  s      
-# 2	       | 3	        | 2		      |         2.02    s     |     4.05  s                               		
-# 2	       | 4	        | 2		      |         2.02    s     |     4.06  s      
-# 2	       | 10	        | 3		      |         2.02    s     |     10.12 s      
-# 5	       | 10	        | 4			  |         2.02    s     |     6.05  s          
-# 5	       | 20			| 5           |         2.03    s     |  >= 8     s
-# +--------|------------|-------------|-----------------------|-------------------------    
+# 2	       | 2	        | 2		      |  2.01                 |   2.04        
+# 2	       | 3	        | 2		      |  2.02                 |   4.06                      		
+# 2	       | 4	        | 2		      |  2.02                 |   4.06        
+# 2	       | 10	        | 3		      |  2.03                 |   10.14        
+# 5	       | 10	        | 4			  |  2.02                 |   6.16            
+# 5	       | 20			| 5           |  2.02                 |  >= 8 s
+# +--------|------------|-------------|-----------------------|------------------------

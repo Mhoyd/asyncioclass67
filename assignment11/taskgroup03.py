@@ -85,7 +85,7 @@ async def customer_generation(queue: Queue, customers: int):
 # producer, and consumer, and start all concurrent tasks.
 async def main():
     CUSTOMER = 10
-    QUEUE = 10
+    QUEUE = 5
     CASHIER = 5
     customer_queue = Queue(QUEUE)
     customers_start_time = time.perf_counter()
@@ -108,3 +108,4 @@ async def main():
     
 if __name__ == "__main__":
     asyncio.run(main())
+
